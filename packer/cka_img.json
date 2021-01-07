@@ -23,7 +23,7 @@
     "provisioners": [
         {
             "type": "shell",
-            "script": "../scripts/package-install.sh"
+            "script": "../scripts/install.sh"
         }
     ]
 }
