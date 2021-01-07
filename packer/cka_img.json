@@ -14,18 +14,16 @@
       },
       "instance_type": "t2.micro",
       "ssh_username": "centos",
-      "ami_name": "wordpress_server_{{timestamp}}",
+      "ami_name": "cka_server_{{timestamp}}",
       "tags": {
-        "Name": "wordpress_img"
+        "Name": "cka_img"
       }
     }],
   
     "provisioners": [
         {
-            "type": "ansible",
-            "playbook_file": "../ansible/wordpress-role.yaml",
-            "collections_path": "../ansible/",
-            "roles_path": "../ansible/roles"
+            "type": "shell",
+            "script": "../scripts/package-install.sh"
         }
     ]
 }
