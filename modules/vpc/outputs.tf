@@ -32,7 +32,7 @@ output "private_subnet2" {
 }
 
 output "security_group" {
-  value = aws_security_group.wordpress_sg.id
+  value = aws_security_group.cka_sg.id
 }
 
 output "aws_eip" {

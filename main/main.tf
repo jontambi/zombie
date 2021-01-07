@@ -4,7 +4,7 @@
 
 module "vpc" {
   source               = "../modules/vpc"
-  vpc_name             = var.vpc_name
+  vpc_name             = var.name
   environment          = var.prefix
   vpc_cidr             = var.vpc_cidr
   private_subnets_cidr = var.private_subnets_cidr
@@ -14,7 +14,7 @@ module "vpc" {
 
 module "ec2" {
   source               = "../modules/ec2"
-  vpc_name             = var.vpc_name
+  vpc_name             = var.name
   environment          = var.prefix
 #  private_subnets_cidr = var.private_subnets_cidr
   azs                  = var.azs
@@ -23,10 +23,11 @@ module "ec2" {
   security_group       = module.vpc.security_group
 
   depends_on = [ 
-    module.rds
+    module.vpc
   ]
 }
 
+/***
 module "cluster" {
   source           = "../../modules/cluster"
   cluster_name     = var.cluster_name
@@ -66,3 +67,4 @@ module "nodes" {
   key_pair            = module.cluster.ssh_key
   disk_size           = var.node_disk_size
 }
+***/

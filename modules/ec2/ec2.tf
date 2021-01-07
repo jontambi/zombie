@@ -5,10 +5,11 @@ resource "aws_key_pair" "ssh_default" {
 }
 
 # Create AWS Instance
-resource "aws_instance" "wordpress_server" {
-    count                  = 2
 
-    ami                         = data.aws_ami.latest_wordpress.id
+resource "aws_instance" "cka_server" {
+    count                       = 1
+
+    ami                         = data.aws_ami.cka_ami.id
     availability_zone           = element(var.azs, count.index)
     instance_type               = "t2.micro"
     key_name                    = aws_key_pair.ssh_default.key_name
@@ -17,13 +18,13 @@ resource "aws_instance" "wordpress_server" {
     associate_public_ip_address = false
 
     tags = {
-        Name = "${var.environment}-${var.vpc_name}-wordpress-${count.index + 1}"
+        Name = "${var.environment}-${var.vpc_name}-cka-${count.index + 1}"
     }
 }
 
 
 # AWS Select latest AMI
-data "aws_ami" "latest_wordpress" {
+data "aws_ami" "cka_ami" {
     owners = ["179966331834"]
     most_recent = true
 
@@ -34,6 +35,6 @@ data "aws_ami" "latest_wordpress" {
 
     filter {
         name = "tag:Name"
-        values = ["wordpress_img"]
+        values = ["cka_img"]
     }
 }

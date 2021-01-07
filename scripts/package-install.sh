@@ -4,7 +4,7 @@
 # Last revised 2020/10/26
 
 # Set hostname
-hostnamectl set-hostname "srvcka" --static
+hostnamectl set-hostname "cka" --static
 hostnamectl set-hostname "Lab - CKA" --pretty
 #cp -p /etc/hosts /etc/hosts.ORI
 #echo "10.10.129.138      sitop-centos-tools" >> /etc/hosts
