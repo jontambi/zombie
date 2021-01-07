@@ -55,5 +55,3 @@ override.tf.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform,packer,ansible
-./main/.terraform.lock.hcl
-.terraform.lock.hcl
