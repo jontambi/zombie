@@ -6,7 +6,7 @@
       "source_ami": "ami-00ddb0e5626798373",
       "instance_type": "t2.medium",
       "ssh_username": "ubuntu",
-      "ssh_interface": "session_manager",
+      "ssh_interface": "public_ip",
       "communicator": "ssh",
       "ami_name": "ubuntu1804_base_img_{{timestamp}}",
       "tags": {

@@ -1,7 +1,7 @@
-# Create AWS Key Pair
-resource "aws_key_pair" "ssh_default" {
-    key_name = "ssh_wordpress"
-    public_key = file(var.my_public_key)
+locals {
+  ssh_user         = "ubuntu"
+  key_name         = "devops"
+  private_key_path = "~/Downloads/devops.pem"
 }
 
 # Create AWS Instance
@@ -9,23 +9,37 @@ resource "aws_key_pair" "ssh_default" {
 resource "aws_instance" "cka_server" {
     count                       = 1
 
-    ami                         = data.aws_ami.cka_ami.id
+    ami                         = "ami-00ddb0e5626798373"
     availability_zone           = element(var.azs, count.index)
-    instance_type               = "t2.micro"
-    key_name                    = aws_key_pair.ssh_default.key_name
+    instance_type               = "t2.medium"
+    key_name                    = local.key_name 
     vpc_security_group_ids      = [var.security_group]
     subnet_id                   = element(var.subnet_id, count.index)
-    associate_public_ip_address = false
+    associate_public_ip_address = true
 
     tags = {
         Name = "${var.environment}-${var.vpc_name}-cka-${count.index + 1}"
     }
+
+    provisioner "remote-exec" {
+    inline = ["echo 'Wait until SSH is ready'"]
+
+    connection {
+      type        = "ssh"
+      user        = local.ssh_user
+      private_key = file(local.private_key_path)
+      host        = aws_instance.cka_server[count.index].public_ip
+    }
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook  -i ${aws_instance.cka_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-requirements.yaml"
+  }
 }
 
-
+/***
 # AWS Select latest AMI
 data "aws_ami" "cka_ami" {
-    owners = ["179966331834"]
+    owners = ["099720109477"]
     most_recent = true
 
     filter {
@@ -38,3 +52,4 @@ data "aws_ami" "cka_ami" {
         values = ["cka_img"]
     }
 }
+***/
