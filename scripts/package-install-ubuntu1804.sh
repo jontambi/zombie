@@ -8,7 +8,7 @@
 #hostnamectl set-hostname "Lab - CKA" --pretty
 
 # Update OS Ubuntu 18.04
-apt-get update && apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet
+apt-get update && apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet setenforce
 
 # Configure prerequisites Containerd
 cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
@@ -53,14 +53,14 @@ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
 cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-apt-get update
+sudo apt-get update
 
 # Install kubelet kubeadm kubectl
-apt-get install -y kubelet kubeadm kubectl
-apt-mark hold kubelet kubeadm kubectl
+sudo apt-get install -y kubelet kubeadm kubectl
+#sudo apt-mark hold kubelet kubeadm kubectl
 
-systemctl daemon-reload
-systemctl restart kubelet
+sudo systemctl daemon-reload
+#systemctl restart kubelet
 
 # Create user ansible
 #useradd -s /bin/bash -c "Usuario de despliegue - DevOps" -U devops
