@@ -55,7 +55,7 @@ resource "aws_default_route_table" "route-private" {
   default_route_table_id = aws_vpc.vpc.default_route_table_id
 
   route {
-    nat_gateway_id = aws_nat_gateway.default.id
+    gateway_id = aws_internet_gateway.igw.id
     cidr_block     = "0.0.0.0/0"
   }
 
@@ -97,7 +97,7 @@ resource "aws_eip" "nat" {
     Name = "${var.environment}-${var.vpc_name}-ElasticIP"
   }
 }
-
+/***
 resource "aws_nat_gateway" "default" {
   depends_on = [ 
     aws_internet_gateway.igw
@@ -112,7 +112,7 @@ resource "aws_nat_gateway" "default" {
   }
   
 }
-
+***/
 # Security Group Creation
 resource "aws_security_group" "cka_sg" {
   name   = "cka-sg"
