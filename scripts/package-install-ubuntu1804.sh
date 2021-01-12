@@ -8,10 +8,10 @@
 #hostnamectl set-hostname "Lab - CKA" --pretty
 
 # Update OS Ubuntu 18.04
-apt-get update && apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet setenforce
+sudo apt-get update && apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet setenforce
 
 # Configure prerequisites Containerd
-cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+sudo cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
@@ -20,7 +20,7 @@ sudo modprobe overlay
 sudo modprobe br_netfilter
 
 # Setup required sysctl params, these persist across reboots.
-cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+sudo cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 EOF
@@ -29,14 +29,14 @@ EOF
 sudo sysctl --system
 
 # Disable SELINUX
-setenforce 0
-cp -p /etc/selinux/config /etc/selinux/config.ORI
-sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+sudo setenforce 0
+sudo cp -p /etc/selinux/config /etc/selinux/config.ORI
+sudo sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 
 # (Install containerd)
 ## Set up the repository
 ### Install required packages
-apt-get update && apt-get install -y containerd
+sudo apt-get update && sudo apt-get install -y containerd
 
 # Configure containerd
 sudo mkdir -p /etc/containerd
@@ -49,8 +49,8 @@ sudo systemctl enable containerd
 sudo systemctl restart containerd
 
 # Installing kubeadm, kubelet and kubectl
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
 sudo apt-get update

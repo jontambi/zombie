@@ -29,5 +29,5 @@ variable "prefix" {
 }
 
 variable "my_public_key" {
-  default = "/home/john/.ssh/id_rsa.pub"
+  default = "/home/john/Downloads/devops.pem"
 }
