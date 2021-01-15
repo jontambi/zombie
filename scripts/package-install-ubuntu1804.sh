@@ -6,27 +6,26 @@
 # Set hostname
 #hostnamectl set-hostname "cka" --static
 #hostnamectl set-hostname "Lab - CKA" --pretty
-sudo su -
 # Update OS Ubuntu 18.04
-apt-get update && apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl net-tools wget vim htop git telnet
 
 # Configure prerequisites Containerd
-cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
+sudo cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
 
-modprobe overlay
-modprobe br_netfilter
+sudo modprobe overlay
+sudo modprobe br_netfilter
 
 # Setup required sysctl params, these persist across reboots.
-cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+sudo cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
 EOF
 
 # Apply sysctl params without reboot
-sysctl --system
+sudo sysctl --system
 
 # Disable SELINUX
 #setenforce 0
@@ -36,13 +35,13 @@ sysctl --system
 # (Install containerd)
 ## Set up the repository
 ### Install required packages
-apt-get update && sudo apt-get install -y containerd
+sudo apt-get update && sudo apt-get install -y containerd
 
 # Configure containerd
-mkdir -p /etc/containerd
-containerd config default | sudo tee /etc/containerd/config.toml
+sudo mkdir -p /etc/containerd
+sudo containerd config default | sudo tee /etc/containerd/config.toml
 
-cat >/etc/containerd/config.toml <<EOF
+sudo cat >/etc/containerd/config.toml <<EOF
     [plugins.cri]
       [plugins.cri.containerd.runtimes]
         [plugins.cri.containerd.runtimes.runc]
@@ -52,19 +51,19 @@ cat >/etc/containerd/config.toml <<EOF
 EOF
 
 # Restart containerd
-systemctl enable containerd
-systemctl restart containerd
+sudo systemctl enable containerd
+sudo systemctl restart containerd
 
 # Installing kubeadm, kubelet and kubectl
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://apt.kubernetes.io/ kubernetes-xenial main
 EOF
-apt-get update
+sudo apt-get update
 
 # Install kubelet kubeadm kubectl
-apt-get install -y kubelet kubeadm kubectl
-apt-mark hold kubelet kubeadm kubectl
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
 
-systemctl daemon-reload
-systemctl restart kubelet
+sudo systemctl daemon-reload
+sudo systemctl restart kubelet
