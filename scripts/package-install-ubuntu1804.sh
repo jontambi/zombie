@@ -41,12 +41,13 @@ sudo apt-get update && sudo apt-get install -y containerd
 sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
 
-sudo cat >/etc/containerd/config.toml <<EOF
+sudo su -
+cat >/etc/containerd/config.toml <<EOF
     [plugins.cri]
       [plugins.cri.containerd.runtimes]
         [plugins.cri.containerd.runtimes.runc]
-           runtime_type = "io.containerd.runc.v1"
-           [plugins.cri.containerd.runtimes.runc.options]
+          runtime_type = "io.containerd.runc.v1"
+          [plugins.cri.containerd.runtimes.runc.options]
               SystemdCgroup = true
 EOF
 
