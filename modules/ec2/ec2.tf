@@ -1,5 +1,5 @@
 locals {
-  ssh_user         = "ubuntu"
+  ssh_user         = "centos"
   key_name         = "packer"
   private_key_path = "../../packer.pem"
   #private_key_path = "~/Downloads/devops.pem"
@@ -7,10 +7,10 @@ locals {
 
 # Create AWS Instance
 
-resource "aws_instance" "cka_server" {
+resource "aws_instance" "master_server" {
     count                       = 1
 
-    ami                         = data.aws_ami.cka_ami.id
+    ami                         = data.aws_ami.k8s_ami.id
     availability_zone           = element(var.azs, count.index)
     instance_type               = "t2.medium"
     key_name                    = local.key_name 
@@ -21,7 +21,7 @@ resource "aws_instance" "cka_server" {
     tags = {
         Name = "${var.environment}-${var.vpc_name}-cka-${count.index + 1}"
     }
-/***
+
     provisioner "remote-exec" {
     inline = ["echo 'Wait until SSH is ready'"]
 
@@ -29,17 +29,21 @@ resource "aws_instance" "cka_server" {
       type        = "ssh"
       user        = local.ssh_user
       private_key = file(local.private_key_path)
-      host        = aws_instance.cka_server[count.index].public_ip
+      host        = aws_instance.master_server[count.index].public_ip
     }
   }
   provisioner "local-exec" {
-    command = "ansible-playbook  -i ${aws_instance.cka_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-requirements.yaml"
+    command = <<EOT
+      sed -i 's/master_ip:/master_ip: ${aws_instance.master_server[count.index].public_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+      sed -i 's/end_point:/end_point: ${aws_instance.master_server[count.index].public_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+      ansible-playbook  -i ${aws_instance.master_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-master.yaml
+    EOT
   }
-***/
+
 }
 
 # AWS Select latest AMI
-data "aws_ami" "cka_ami" {
+data "aws_ami" "k8s_ami" {
     owners = ["179966331834"]
     most_recent = true
 
@@ -50,6 +54,6 @@ data "aws_ami" "cka_ami" {
 
     filter {
         name = "tag:Name"
-        values = ["Image_base_Ubuntu1804"]
+        values = ["Image_base_Centos7"]
     }
 }

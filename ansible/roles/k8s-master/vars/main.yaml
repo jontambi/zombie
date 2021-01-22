@@ -2,13 +2,13 @@
 k8s_user: root
 
 # Master IP
-master_ip: 10.20.20.142
+master_ip: 34.201.4.93
 
 # Endpoint
-end_point: 10.20.20.142
+end_point: 34.201.4.93
 
 # Kubernetes
-kube_version: v1.18.0
+kube_version: v1.20.0
 #token: b0f7b8.8d1767876297d85c
 
 # 1.8.x feature: --feature-gates SelfHosting=true

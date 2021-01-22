@@ -39,7 +39,7 @@
   
 - name: installing docker
   yum:
-    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    name: ['docker-ce-19.03.11', 'docker-ce-cli-19.03.11', 'containerd.io-1.2.13']
     state: present
     update_cache: yes
 
