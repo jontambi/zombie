@@ -8,7 +8,7 @@
   when: reset_cluster is succeeded
   shell: |
     kubeadm init --control-plane-endpoint {{ end_point }} --service-cidr {{ service_cidr }} --kubernetes-version {{ kube_version }} \
-                 --pod-network-cidr {{ pod_network_cidr }} --apiserver-advertise-address {{ master_ip }}
+    --pod-network-cidr {{ pod_network_cidr }} --apiserver-advertise-address {{ master_ip }}
   register: init_cluster
 
 - debug:

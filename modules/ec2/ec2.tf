@@ -19,7 +19,7 @@ resource "aws_instance" "master_server" {
     associate_public_ip_address = true 
 
     tags = {
-        Name = "${var.environment}-${var.vpc_name}-cka-${count.index + 1}"
+        Name = "${var.environment}-${var.vpc_name}-master-${count.index + 1}"
     }
 
     provisioner "remote-exec" {
@@ -34,11 +34,30 @@ resource "aws_instance" "master_server" {
   }
   provisioner "local-exec" {
     command = <<EOT
-      sed -i 's/master_ip:/master_ip: ${aws_instance.master_server[count.index].public_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
-      sed -i 's/end_point:/end_point: ${aws_instance.master_server[count.index].public_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+      sed 's/^master_ip:.*/master_ip: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+      sed 's/^end_point:.*/end_point: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
       ansible-playbook  -i ${aws_instance.master_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-master.yaml
     EOT
   }
+
+}
+
+# Create AWS Instance Worker
+
+resource "aws_instance" "worker_server" {
+    count                       = 1
+
+    ami                         = data.aws_ami.k8s_ami.id
+    availability_zone           = element(var.azs, count.index)
+    instance_type               = "t2.medium"
+    key_name                    = local.key_name 
+    vpc_security_group_ids      = [var.security_group]
+    subnet_id                   = element(var.subnet_id, count.index)
+    associate_public_ip_address = false
+
+    tags = {
+        Name = "${var.environment}-${var.vpc_name}-worker-${count.index + 1}"
+    }
 
 }
 
