@@ -1,0 +1,26 @@
+---
+- name: check if kubeadm has already run
+  stat:
+    path: "/etc/kubernetes/pki/ca.key"
+  register: kubeadm_ca
+
+- name: init cluster if needed
+  include_tasks: init.yaml
+  when: not kubeadm_ca.stat.exists
+  run_once: yes
+  register: ini_cluster
+
+- name: install calico network
+  when: ini_cluster is succeeded
+  include_tasks: cni.yaml
+  run_once: yes
+
+- name: deploy kubernetes dashboard into cluster
+  when: ini_cluster is succeeded and enable_dashboard
+  command: |
+    kubectl --kubeconfig={{ kubeadm_config }} apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/aio/deploy/recommended.yaml
+  register: create_result
+  until: create_result.rc == 0
+  retries: 5
+  delay: 2
+  ignore_errors: true

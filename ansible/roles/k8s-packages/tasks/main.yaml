@@ -1,0 +1,105 @@
+---
+- name: Disabling swap in all nodes
+  command:
+    swapoff -a
+  changed_when: true
+  when: ansible_swaptotal_mb > 0
+
+- name: remove from swap from fstab
+  lineinfile:
+    path: '/etc/fstab'
+    regexp: 'swap'
+    state: 'absent'
+    backup: yes
+
+- name: disable SELinux
+  selinux:
+    state: disabled
+
+- name: enable kernel module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: setting up bridged traffic
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    state: present
+
+- name: installing docker dependencies
+  yum:
+    name: ['yum-utils'] 
+    state: present
+
+- name: adding docker repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+  
+- name: installing docker
+  yum:
+    name: ['docker-ce', 'docker-ce-cli', 'containerd.io']
+    state: present
+    update_cache: yes
+
+- name: create /etc/docker
+  file:
+    path: /etc/docker
+    state: directory
+    mode: '0755'
+
+- name: set up the Docker daemon
+  shell: |
+    cat > /etc/docker/daemon.json <<EOF
+    {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2",
+      "storage-opts": [
+        "overlay2.override_kernel_check=true"
+      ]
+    }
+    EOF
+
+- name: create /etc/systemd/system/docker.service.d
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: enable docker
+  systemd:
+    name: docker
+    daemon_reload: yes
+    state: started
+    enabled: yes
+
+- name: add kubernetes repository
+  yum_repository:
+    name: Kubernetes
+    description: Kubernetes YUM repository
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-$basearch
+    gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+    enabled: yes
+    gpgcheck: yes
+    repo_gpgcheck: yes
+
+- name: installing kubeadm, kubelet and kubectl
+  shell: |
+    yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+- name: enable kubelet
+  shell: |
+    systemctl enable --now kubelet
+
+- name: check version
+  shell: |
+    kubeadm --version
+    kubectl version --client
+    kubelet --version
+  register: kubeversion
+
+- debug: msg="{{ kubeversion.stdout }}"

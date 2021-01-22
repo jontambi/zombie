@@ -1,0 +1,8 @@
+---
+- hosts: default
+  gather_facts: yes
+  become: true
+
+  roles:
+    - role: update-system
+    - role: k8s-packages

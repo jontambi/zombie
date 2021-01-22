@@ -4,7 +4,7 @@
       "profile": "default",
       "region": "us-east-1",
       "source_ami": "ami-0affd4508a5d2481b",
-      "instance_type": "t2.micro",
+      "instance_type": "t2.medium",
       "ssh_username": "centos",
       "ami_name": "centos7_base_img_{{timestamp}}",
       "tags": {
@@ -14,8 +14,10 @@
   
     "provisioners": [
       {
-        "type": "shell",
-        "script": "../scripts/package-install.sh"
+        "type": "ansible",
+        "playbook_file": "../ansible/k8s-role.yaml",
+        "collections_path": "../ansible/",
+        "roles_path": "../ansible/roles"
       }
     ]
 }

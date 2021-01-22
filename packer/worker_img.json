@@ -1,0 +1,36 @@
+{
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "profile": "default",
+            "region": "us-east-1",
+            "source_ami_filter":
+            {
+                "filters":
+                {
+                    "virtualization-type": "hvm",
+                    "name": "centos7_base_img_*",
+                    "root-device-type": "ebs"
+                },
+                "owners": ["179966331834"],
+                "most_recent": true
+            },
+            "instance_type": "t2.mmedium",
+            "ssh_username": "centos",
+            "ami_name": "worker_server_{{timestamp}}",
+            "tags":
+            {
+                "Name": "worker_img"
+            }
+        }
+    ],
+
+    "provisioners": [
+        {
+            "type": "ansible",
+            "playbook_file": "../ansible/worker-role.yaml",
+            "collections_path": "../ansible/",
+            "roles_path": "../ansible/roles"
+        }
+    ]
+}

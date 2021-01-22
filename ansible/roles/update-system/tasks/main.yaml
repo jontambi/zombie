@@ -1,0 +1,34 @@
+---
+- name: update the system CentOS7
+  yum:
+    name: "*"
+    state: latest
+
+- name: install security updates
+  yum:
+    name: "*"
+    security: yes
+    state: latest
+
+#- name: install epel-release-7
+#  shell: |
+#    yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+
+- name: install epel-release
+  yum:
+    name: epel-release
+    state: latest
+
+- name: install packages
+  yum:
+    name: ['net-tools', 'wget', 'vim', 'htop', 'yum-plugin-security', 'telnet']
+    state: present
+    update_cache: yes
+#    name: "{{ item }}"
+#  with_items:
+#    - net-tools
+#    - wget
+#    - vim
+#    - htop
+#    - yum-plugin-security
+#    - telnet

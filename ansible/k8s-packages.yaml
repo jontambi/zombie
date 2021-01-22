@@ -1,0 +1,6 @@
+---
+- hosts: kubernetes-prd 
+  become: true
+
+  roles:
+    - role: k8s-packages

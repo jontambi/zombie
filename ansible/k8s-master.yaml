@@ -1,0 +1,6 @@
+---
+- hosts: master-kubernetes-qas 
+  become: true
+
+  roles:
+    - role: k8s-master
