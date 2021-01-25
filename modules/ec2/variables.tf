@@ -19,6 +19,10 @@ variable "my_public_key" {
   
 }
 
-variable "security_group" {
+variable "master_security_group" {
+  
+}
+
+variable "worker_security_group" {
   
 }

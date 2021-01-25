@@ -14,7 +14,7 @@ resource "aws_instance" "master_server" {
     availability_zone           = element(var.azs, count.index)
     instance_type               = "t2.medium"
     key_name                    = local.key_name 
-    vpc_security_group_ids      = [var.security_group]
+    vpc_security_group_ids      = [var.master_security_group]
     subnet_id                   = element(var.subnet_id, count.index)
     associate_public_ip_address = true 
 
@@ -34,13 +34,15 @@ resource "aws_instance" "master_server" {
   }
   provisioner "local-exec" {
     command = <<EOT
-      sed 's/^master_ip:.*/master_ip: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
-      sed 's/^end_point:.*/end_point: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
-      ansible-playbook  -i ${aws_instance.master_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-master.yaml
+      ansible-playbook --extra-vars='{"master_ip": ${aws_instance.master_server[count.index].private_ip}, "end_point": ${aws_instance.master_server[count.index].private_ip} }' -i ${aws_instance.master_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-master.yaml
     EOT
   }
 
 }
+
+#sed 's/^master_ip.*/master_ip: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+#      sed 's/^end_point.*/end_point: ${aws_instance.master_server[count.index].private_ip}/' ../ansible/roles/k8s-master/vars/main.yaml;
+#      ansible-playbook  -i ${aws_instance.master_server[count.index].public_ip}, --private-key ${local.private_key_path} ../ansible/k8s-master.yaml
 
 # Create AWS Instance Worker
 
@@ -51,7 +53,7 @@ resource "aws_instance" "worker_server" {
     availability_zone           = element(var.azs, count.index)
     instance_type               = "t2.medium"
     key_name                    = local.key_name 
-    vpc_security_group_ids      = [var.security_group]
+    vpc_security_group_ids      = [var.worker_security_group]
     subnet_id                   = element(var.subnet_id, count.index)
     associate_public_ip_address = false
 

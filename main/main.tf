@@ -13,14 +13,15 @@ module "vpc" {
 }
 
 module "ec2" {
-  source               = "../modules/ec2"
-  vpc_name             = var.name
-  environment          = var.prefix
+  source                = "../modules/ec2"
+  vpc_name              = var.name
+  environment           = var.prefix
 #  private_subnets_cidr = var.private_subnets_cidr
-  azs                  = var.azs
-  subnet_id            = module.vpc.private_subnet_id
-  my_public_key        = var.my_public_key
-  security_group       = module.vpc.security_group
+  azs                   = var.azs
+  subnet_id             = module.vpc.private_subnet_id
+  my_public_key         = var.my_public_key
+  master_security_group = module.vpc.master_security_group
+  worker_security_group = module.vpc.worker_security_group
 
   depends_on = [ 
     module.vpc

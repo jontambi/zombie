@@ -31,8 +31,12 @@ output "private_subnet2" {
   value = element(aws_subnet.private-subnet.*.id, 4 )
 }
 
-output "security_group" {
-  value = aws_security_group.cka_sg.id
+output "master_security_group" {
+  value = aws_security_group.master_sg.id
+}
+
+output "worker_security_group" {
+  value = aws_security_group.worker_sg.id
 }
 
 output "aws_eip" {

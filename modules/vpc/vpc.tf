@@ -114,8 +114,8 @@ resource "aws_nat_gateway" "default" {
 }
 ***/
 # Security Group Creation
-resource "aws_security_group" "cka_sg" {
-  name   = "cka-sg"
+resource "aws_security_group" "master_sg" {
+  name   = "master-sg"
   vpc_id = aws_vpc.vpc.id
 }
 
@@ -123,28 +123,50 @@ resource "aws_security_group" "cka_sg" {
 resource "aws_security_group_rule" "ssh_inbound_access" {
   from_port         = 22
   protocol          = "tcp"
-  security_group_id = aws_security_group.cka_sg.id
+  security_group_id = aws_security_group.master_sg.id
   to_port           = 22
   type              = "ingress"
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
-/***
-resource "aws_security_group_rule" "http_inbound_access" {
-  from_port         = 80
+resource "aws_security_group_rule" "api_inbound_access" {
+  from_port         = 6443
   protocol          = "tcp"
-  security_group_id = aws_security_group.wordpress_sg.id
-  to_port           = 80
+  security_group_id = aws_security_group.master_sg.id
+  to_port           = 6443
   type              = "ingress"
-  cidr_blocks       = ["0.0.0.0/0"]
+  cidr_blocks       = [var.vpc_cidr]
 }
-***/
+
 # All OutBound Access
 resource "aws_security_group_rule" "all_outbound_access" {
   from_port         = 0
   protocol          = "-1"
-  security_group_id = aws_security_group.cka_sg.id
+  security_group_id = aws_security_group.master_sg.id
   to_port           = 0
   type              = "egress"
   cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group" "worker_sg" {
+  name = "worker-sg"
+  vpc_id = aws_vpc.vpc.id
+}
+
+resource "aws_security_group_rule" "k8s_all_inbound_access" {
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.worker_sg.id
+  to_port           = 0
+  type              = "ingress"
+  cidr_blocks       = [var.vpc_cidr]
+}
+
+resource "aws_security_group_rule" "k8s_all_outbound_access" {
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.worker_sg.id
+  to_port           = 0
+  type              = "egress"
+  cidr_blocks       = [var.vpc_cidr]
 }

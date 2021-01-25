@@ -12,7 +12,7 @@
   register: init_cluster
 
 - debug:
-    var: init_cluster.stdout
+    var: init_cluster.stdout_lines
 
 - name: create kubernetes config directory
   file:
