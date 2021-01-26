@@ -3,32 +3,32 @@ output "vpc_id" {
 }
 
 output "private_subnet_id" {
-  value = aws_subnet.private-subnet[*].id
+  value = aws_subnet.private_subnet[*].id
 }
 
 output "public_subnet1" {
-  value = element(aws_subnet.public-subnet.*.id, 1 )
+  value = element(aws_subnet.public_subnet.*.id, 1 )
 }
 
 output "public_subnet2" {
-  value = element(aws_subnet.public-subnet.*.id, 2 )
+  value = element(aws_subnet.public_subnet.*.id, 2 )
 }
 
 output "public_route_table_id" {
-  value = aws_route_table.route-public[*].id
+  value = aws_route_table.route_public[*].id
 }
 
 output "private_route_table_id" {
-  value = aws_default_route_table.route-private[*].id
+  value = aws_default_route_table.route_private[*].id
 }
 
 
 output "private_subnet1" {
-  value = element(aws_subnet.private-subnet.*.id, 3 )
+  value = element(aws_subnet.private_subnet.*.id, 3 )
 }
 
 output "private_subnet2" {
-  value = element(aws_subnet.private-subnet.*.id, 4 )
+  value = element(aws_subnet.private_subnet.*.id, 4 )
 }
 
 output "master_security_group" {

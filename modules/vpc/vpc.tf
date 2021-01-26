@@ -24,7 +24,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-resource "aws_subnet" "private-subnet" {
+resource "aws_subnet" "private_subnet" {
   count = length(var.private_subnets_cidr)
 
   availability_zone = element(var.azs, count.index)
@@ -36,7 +36,7 @@ resource "aws_subnet" "private-subnet" {
   )
 }
 
-resource "aws_subnet" "public-subnet" {
+resource "aws_subnet" "public_subnet" {
   count = length(var.public_subnets_cidr)
   map_public_ip_on_launch = true
 
@@ -50,7 +50,7 @@ resource "aws_subnet" "public-subnet" {
 
 }
 
-resource "aws_default_route_table" "route-private" {
+resource "aws_default_route_table" "route_private" {
   #count = length(var.private_subnets_cidr)
   default_route_table_id = aws_vpc.vpc.default_route_table_id
 
@@ -64,7 +64,7 @@ resource "aws_default_route_table" "route-private" {
   }
 }
 
-resource "aws_route_table" "route-public" {
+resource "aws_route_table" "route_public" {
   vpc_id = aws_vpc.vpc.id
 
   route {
@@ -79,15 +79,15 @@ resource "aws_route_table" "route-public" {
 resource "aws_route_table_association" "private" {
   count          = length(var.private_subnets_cidr)
 
-  route_table_id = aws_default_route_table.route-private.id
-  subnet_id      = element(aws_subnet.private-subnet.*.id, count.index)
+  route_table_id = aws_default_route_table.route_private.id
+  subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
 }
 
 resource "aws_route_table_association" "public" {
   count          = length(var.public_subnets_cidr)
 
-  route_table_id = aws_route_table.route-public.id
-  subnet_id      = element(aws_subnet.public-subnet.*.id, count.index)  
+  route_table_id = aws_route_table.route_public.id
+  subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)  
 }
 
 resource "aws_eip" "nat" {
@@ -130,10 +130,46 @@ resource "aws_security_group_rule" "ssh_inbound_access" {
 }
 
 resource "aws_security_group_rule" "api_inbound_access" {
-  from_port         = 6443
+  from_port         = 0
+  protocol          = "-1"
+  security_group_id = aws_security_group.master_sg.id
+  to_port           =0
+  type              = "ingress"
+  cidr_blocks       = [var.vpc_cidr]
+}
+
+resource "aws_security_group_rule" "etcd_kubeapi_inbound_access" {
+  from_port         = 2379
   protocol          = "tcp"
   security_group_id = aws_security_group.master_sg.id
-  to_port           = 6443
+  to_port           = 2380
+  type              = "ingress"
+  cidr_blocks       = [var.vpc_cidr]
+}
+
+resource "aws_security_group_rule" "kubelet_inbound_access" {
+  from_port         = 10250
+  protocol          = "tcp"
+  security_group_id = aws_security_group.master_sg.id
+  to_port           = 10250
+  type              = "ingress"
+  cidr_blocks       = [var.vpc_cidr]
+}
+
+resource "aws_security_group_rule" "scheduler_inbound_access" {
+  from_port         = 10251
+  protocol          = "tcp"
+  security_group_id = aws_security_group.master_sg.id
+  to_port           = 10251
+  type              = "ingress"
+  cidr_blocks       = [var.vpc_cidr]
+}
+
+resource "aws_security_group_rule" "cmanager_inbound_access" {
+  from_port         = 10252
+  protocol          = "tcp"
+  security_group_id = aws_security_group.master_sg.id
+  to_port           = 10252
   type              = "ingress"
   cidr_blocks       = [var.vpc_cidr]
 }
@@ -153,15 +189,17 @@ resource "aws_security_group" "worker_sg" {
   vpc_id = aws_vpc.vpc.id
 }
 
+# All InBound Access Worker
 resource "aws_security_group_rule" "k8s_all_inbound_access" {
-  from_port         = 0
+  from_port         = 0 
   protocol          = "-1"
   security_group_id = aws_security_group.worker_sg.id
   to_port           = 0
   type              = "ingress"
-  cidr_blocks       = [var.vpc_cidr]
+  cidr_blocks       = ["0.0.0.0/0"]
 }
 
+# All OutBound Access Worker
 resource "aws_security_group_rule" "k8s_all_outbound_access" {
   from_port         = 0
   protocol          = "-1"
