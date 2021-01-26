@@ -1,5 +1,5 @@
 output "master_ip" {
-    value = aws_instance.master_server[*].public_ip
+    value = aws_instance.master_server[*].private_ip
 }
 
 output "worker_ip" {

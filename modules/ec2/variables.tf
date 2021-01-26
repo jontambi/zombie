@@ -11,7 +11,11 @@ variable "azs" {
   description = "Available zones"
 }
 
-variable "subnet_id" {
+variable "public_subnet_id" {
+  description = "VPC Public Subnets ID"
+}
+
+variable "private_subnet_id" {
   description = "VPC Private Subnets ID"
 }
 
@@ -19,10 +23,18 @@ variable "my_public_key" {
   
 }
 
+#variable "security_group" {
+#  
+#}
+
 variable "master_security_group" {
   
 }
 
 variable "worker_security_group" {
+  
+}
+
+variable "aws_eip" {
   
 }
