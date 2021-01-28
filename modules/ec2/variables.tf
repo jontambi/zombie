@@ -15,9 +15,9 @@ variable "public_subnet_id" {
   description = "VPC Public Subnets ID"
 }
 
-variable "private_subnet_id" {
-  description = "VPC Private Subnets ID"
-}
+#variable "private_subnet_id" {
+#  description = "VPC Private Subnets ID"
+#}
 
 variable "my_public_key" {
   
@@ -31,10 +31,10 @@ variable "master_security_group" {
   
 }
 
-variable "worker_security_group" {
-  
-}
+#variable "worker_security_group" {
+#  
+#}
 
-variable "aws_eip" {
-  
-}
+#variable "aws_eip" {
+#  
+#}

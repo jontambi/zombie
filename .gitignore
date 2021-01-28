@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform,packer,ansible
-# Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,terraform,packer,ansible
+# Created by https://www.toptal.com/developers/gitignore/api/terraform,vscode,ansible,packer
+# Edit at https://www.toptal.com/developers/gitignore?templates=terraform,vscode,ansible,packer
 
 ### Ansible ###
 *.retry
@@ -43,15 +43,12 @@ override.tf.json
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
 
-### VisualStudioCode ###
+### vscode ###
 .vscode/*
+!.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
+!.vscode/extensions.json
 *.code-workspace
 
-### VisualStudioCode Patch ###
-# Ignore all local history of files
-.history
-.ionide
-
-# End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,terraform,packer,ansible
+# End of https://www.toptal.com/developers/gitignore/api/terraform,vscode,ansible,packer

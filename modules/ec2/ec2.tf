@@ -15,7 +15,7 @@ resource "aws_instance" "master_server" {
     key_name                    = local.key_name 
     vpc_security_group_ids      = [var.master_security_group]
     subnet_id                   = element(var.public_subnet_id, count.index)
-#    associate_public_ip_address = false
+    associate_public_ip_address = true
 
     tags = {
         Name = "${var.environment}-${var.vpc_name}-master-${count.index + 1}"
@@ -49,9 +49,9 @@ resource "aws_instance" "worker_server" {
     availability_zone           = element(var.azs, count.index)
     instance_type               = "t2.medium"
     key_name                    = local.key_name 
-    vpc_security_group_ids      = [var.worker_security_group]
-    subnet_id                   = element(var.private_subnet_id, count.index)
-#    associate_public_ip_address = false
+    vpc_security_group_ids      = [var.master_security_group]
+    subnet_id                   = element(var.public_subnet_id, count.index)
+    associate_public_ip_address = true
 
     tags = {
         Name = "${var.environment}-${var.vpc_name}-worker-${count.index + 1}"

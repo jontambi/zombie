@@ -69,6 +69,7 @@ resource "aws_route_table_association" "public" {
   subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)  
 }
 
+/***
 resource "aws_eip" "nat" {
   vpc   = true
   
@@ -112,7 +113,7 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.nat_instance[count.index].id
   subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
 }
-
+***/
 
 # Security Group Creation
 resource "aws_security_group" "master_sg" {
@@ -127,6 +128,15 @@ resource "aws_security_group_rule" "ssh_inbound_access" {
   protocol          = "tcp"
   security_group_id = aws_security_group.master_sg.id
   to_port           = 22
+  type              = "ingress"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "nodeport_inbound_access" {
+  from_port         = 30000
+  protocol          = "-1"
+  security_group_id = aws_security_group.master_sg.id
+  to_port           = 32767
   type              = "ingress"
   cidr_blocks       = ["0.0.0.0/0"]
 }
@@ -150,6 +160,7 @@ resource "aws_security_group_rule" "all_outbound_access" {
   cidr_blocks       = ["0.0.0.0/0"]
 }
 
+/***
 resource "aws_security_group" "worker_sg" {
   name        = "worker-sg"
   description = "Kubernetes worker security group"
@@ -195,3 +206,4 @@ resource "aws_security_group_rule" "k8s_all_outbound_access" {
   cidr_blocks       = ["0.0.0.0/0"]
   #cidr_blocks       = [var.vpc_cidr]
 }
+***/

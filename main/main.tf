@@ -19,12 +19,12 @@ module "ec2" {
 #  private_subnets_cidr = var.private_subnets_cidr
   azs                   = var.azs
   public_subnet_id      = module.vpc.public_subnet_id
-  private_subnet_id     = module.vpc.private_subnet_id
+  #private_subnet_id     = module.vpc.private_subnet_id
   my_public_key         = var.my_public_key
   #security_group        = module.vpc.security_group
   master_security_group = module.vpc.master_security_group
-  worker_security_group = module.vpc.worker_security_group
-  aws_eip               = module.vpc.aws_eip
+  #worker_security_group = module.vpc.worker_security_group
+  #aws_eip               = module.vpc.aws_eip
 
   depends_on = [ 
     module.vpc

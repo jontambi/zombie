@@ -40,10 +40,10 @@ output "master_security_group" {
   value = aws_security_group.master_sg.id
 }
 
-output "worker_security_group" {
-  value = aws_security_group.worker_sg.id
-}
+#output "worker_security_group" {
+#  value = aws_security_group.worker_sg.id
+#}
 
-output "aws_eip" {
-  value = aws_eip.nat.public_ip
-}
+#output "aws_eip" {
+#  value = aws_eip.nat.public_ip
+#}
