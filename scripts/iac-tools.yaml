@@ -1,9 +1,0 @@
-- name: Config IaC tools
-  hosts: localhost
-  gather_facts: yes
-  become: no
-  
-
-  tasks:
-    - name: Install terraform latest
-      
